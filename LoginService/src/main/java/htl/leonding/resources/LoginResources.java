@@ -5,8 +5,6 @@ import jakarta.ws.rs.Path;
 
 @Path("/login")
 public class LoginResources {
-
-
     @POST
     public void register() {
         throw new RuntimeException("Not yet implemented");
@@ -16,6 +14,4 @@ public class LoginResources {
     public void login() {
         throw new RuntimeException("Not yet implemented");
     }
-
-
 }
