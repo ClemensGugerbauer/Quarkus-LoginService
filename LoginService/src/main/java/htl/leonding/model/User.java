@@ -24,7 +24,7 @@ public class User {
     @NotBlank
     public String password;
 
-    @Pattern(regexp = "^\\+(?:43|0043)?[ ()\\/-]*0[6-9]\\d{6,7}$", message = "Sogamoi bitte a österreichische Telefonnummer ein")
+    //@Pattern(regexp = "^\\+(?:43|0043)?[ ()\\/-]*0[6-9]\\d{6,7}$", message = "Sogamoi bitte a österreichische Telefonnummer ein")
     public String telephoneNumber;
 
     public String resetToken;

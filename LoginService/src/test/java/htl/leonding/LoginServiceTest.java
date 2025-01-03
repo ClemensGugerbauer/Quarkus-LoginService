@@ -1,10 +1,8 @@
 package htl.leonding;
 
-import com.arjuna.ats.jta.exceptions.NotImplementedException;
 import htl.leonding.model.User;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import jdk.jshell.spi.ExecutionControl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
