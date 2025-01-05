@@ -71,7 +71,7 @@ public class LoginService {
         }
 
         try {
-            if(hashPassword(loginUserDto.password()).equals(user.get().getPassword())) {
+            if(hashPassword(loginUserDto.password()).equals(user.get().password)) {
                 return Jwt.issuer("https://htl-leonding.at").sign();
             }
             else{
@@ -101,7 +101,7 @@ public class LoginService {
         Optional<User> user = userRepository.findByUsername(username);
 
         if(user.isPresent()) {
-            if(user.get().RecoveryCode == code) {
+            if(user.get().recoveryCode == code) {
                 return true;
             }
         }
@@ -114,7 +114,7 @@ public class LoginService {
         Optional<User> user = userRepository.findByUsername(username);
 
         if(user.isPresent()) {
-            user.get().setRecoveryCode(recoveryNumber);
+            user.get().recoveryCode = recoveryNumber;
         }
     }
 }
