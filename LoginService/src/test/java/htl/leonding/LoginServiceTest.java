@@ -1,6 +1,7 @@
 package htl.leonding;
 
 import htl.leonding.model.User;
+import htl.leonding.services.UserService;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
