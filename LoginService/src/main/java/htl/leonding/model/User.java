@@ -28,6 +28,4 @@ public class User {
     public byte[] salt;
 
     public int recoveryCode;
-
-    //public String resetToken;
 }

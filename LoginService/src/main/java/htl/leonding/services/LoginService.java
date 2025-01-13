@@ -8,6 +8,8 @@ import htl.leonding.model.User;
 import htl.leonding.repository.UserRepository;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 
 import javax.crypto.SecretKeyFactory;
@@ -23,14 +25,16 @@ import java.util.Optional;
 @NoArgsConstructor
 public class LoginService {
 
-    private UserRepository userRepository;
+    @Inject
+    UserRepository userRepository;
 
     public LoginService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    public String registerNewUserInDB(RegisterUserDto user) throws CouldNotAddToDataBaseException {
 
+    @Transactional
+    public String registerNewUserInDB(RegisterUserDto user) throws CouldNotAddToDataBaseException {
         try {
             String hashedPassword = hashPassword(user.password());
             userRepository.persist(User.builder()
@@ -38,7 +42,7 @@ public class LoginService {
                     .password(hashedPassword)
                     .telephoneNumber(user.telephoneNumber())
                     .build());
-            return Jwt.issuer("https://htl-leonding.at").sign();
+            return Jwt.issuer("login-service").subject(user.username()).expiresAt(System.currentTimeMillis() + 3600).sign();
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new RuntimeException(e);
         }
@@ -49,7 +53,7 @@ public class LoginService {
         Optional<User> user = userRepository.findByUsername(username);
 
         if (user.isPresent()) {
-            String hashedPassword = null;
+            String hashedPassword;
             try {
                 hashedPassword = hashPassword(password);
             } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
@@ -72,7 +76,7 @@ public class LoginService {
 
         try {
             if(hashPassword(loginUserDto.password()).equals(user.get().password)) {
-                return Jwt.issuer("https://htl-leonding.at").sign();
+                return Jwt.issuer("login-service").subject(loginUserDto.username()).expiresAt(System.currentTimeMillis() + 3600).sign();
             }
             else{
                 return "";
@@ -87,10 +91,9 @@ public class LoginService {
         byte[] salt = new byte[16];
         random.nextBytes(salt);
 
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 56_000);
-        SecretKeyFactory factory;
-
-        factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        int keyLength = 128;
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 56_000, keyLength);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         byte[] hash = factory.generateSecret(spec).getEncoded();
 
         return new String(hash);
@@ -100,21 +103,14 @@ public class LoginService {
 
         Optional<User> user = userRepository.findByUsername(username);
 
-        if(user.isPresent()) {
-            if(user.get().recoveryCode == code) {
-                return true;
-            }
-        }
+        return user.filter(value -> value.recoveryCode == code).isPresent();
 
-        return false;
     }
 
     public void setRecoveryNumber(String username, int recoveryNumber) {
 
         Optional<User> user = userRepository.findByUsername(username);
 
-        if(user.isPresent()) {
-            user.get().recoveryCode = recoveryNumber;
-        }
+        user.ifPresent(value -> value.recoveryCode = recoveryNumber);
     }
 }

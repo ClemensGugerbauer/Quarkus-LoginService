@@ -7,6 +7,7 @@ import htl.leonding.dto.RegisterUserDto;
 import htl.leonding.dto.ResetUserDto;
 import htl.leonding.dto.ResetUserDtoWithCode;
 import htl.leonding.services.LoginService;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
@@ -18,7 +19,8 @@ import java.security.SecureRandom;
 @NoArgsConstructor
 public class LoginResources {
 
-    private LoginService loginService;
+    @Inject
+    LoginService loginService;
 
     public LoginResources(LoginService loginService) {
         this.loginService = loginService;
@@ -27,7 +29,6 @@ public class LoginResources {
     @POST
     @Path("register")
     public Response register(RegisterUserDto loginUserDto) {
-
         String jwt;
 
         try {
